@@ -16,8 +16,8 @@ namespace Chat.Server.Messages
             [Service]ITopicEventReceiver eventReceiver,
             CancellationToken cancellationToken)
         {
-            return await eventReceiver.SubscribeAsync<string, Message>(
-                currentUserEmail, cancellationToken);
+            return (await eventReceiver.SubscribeAsync<string, Message>(
+                currentUserEmail, cancellationToken)).ReadEventsAsync();
         }
     }
 }

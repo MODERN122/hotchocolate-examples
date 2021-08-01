@@ -11,7 +11,6 @@ using Chat.Server.People;
 using Chat.Server.Users;
 using HotChocolate;
 using HotChocolate.AspNetCore;
-using HotChocolate.AspNetCore.Voyager;
 using HotChocolate.Execution.Configuration;
 using HotChocolate.Types;
 using Microsoft.EntityFrameworkCore;
@@ -36,11 +35,8 @@ namespace Chat.Server
 
             services
                 .AddDbContext<ChatDbContext>()
-                .AddDataLoaderRegistry()
                 .AddInMemorySubscriptions()
-                .AddGraphQL(sp =>
-                    SchemaBuilder.New()
-                        .AddServices(sp)
+                .AddGraphQL()
                         .AddQueryType(d => d.Name("Query"))
                         .AddType<PersonQueries>()
                         .AddMutationType(d => d.Name("Mutation"))
@@ -52,11 +48,8 @@ namespace Chat.Server
                         .AddType<PersonSubscriptions>()
                         .AddType<MessageExtension>()
                         .AddType<PersonExtension>()
-                        .AddAuthorizeDirectiveType()
-                        .BindClrType<string, StringType>()
-                        .BindClrType<Guid, IdType>()
-                        .Create(),
-                    new QueryExecutionOptions { ForceSerialExecution = true });
+                        .BindRuntimeType<string, StringType>()
+                        .BindRuntimeType<Guid, IdType>();
 
             services.AddQueryRequestInterceptor((context, builder, ct) =>
             {
@@ -96,9 +89,7 @@ namespace Chat.Server
 
             app.UseWebSockets();
 
-            app.UseGraphQL()
-                .UsePlayground()
-                .UseVoyager();
+            app.UseEndpoints(x => x.MapGraphQL());
 
             app.UseEndpoints(endpoints =>
             {

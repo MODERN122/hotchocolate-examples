@@ -12,7 +12,7 @@ namespace Chat.Server.People
     {
         private readonly ChatDbContext _dbContext;
 
-        public PersonByEmailDataLoader(ChatDbContext dbContext)
+        public PersonByEmailDataLoader(GreenDonut.IBatchScheduler batchScheduler, ChatDbContext dbContext) : base(batchScheduler)
         {
             _dbContext = dbContext;
         }

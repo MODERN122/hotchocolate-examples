@@ -14,9 +14,6 @@ namespace Chat.Server.People
             person.LastSeen < DateTime.UtcNow.AddMinutes(10);
 
         [UsePaging]
-        [UseSelection]
-        [UseFiltering]
-        [UseSorting]
         public IQueryable<Message> GetMessages(
             [GlobalState]Guid currentPersonId,
             [Parent]Person recipient,
@@ -28,9 +25,6 @@ namespace Chat.Server.People
         }
 
         [UsePaging]
-        [UseSelection]
-        [UseFiltering]
-        [UseSorting]
         public IQueryable<Person> GetFriends(
             [Parent]Person person,
             [Service]ChatDbContext dbContext) =>
