@@ -6,7 +6,6 @@ using HotChocolate.Types.Relay;
 
 namespace Chat.Server.People
 {
-    [ExtendObjectType(Name = "Query")]
     public class PersonQueries
     {
         /// <summary>

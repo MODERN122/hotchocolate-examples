@@ -7,7 +7,6 @@ using HotChocolate.Types;
 
 namespace Chat.Server.Messages
 {
-    [ExtendObjectType(Name = "Subscription")]
     public class MessageSubscriptions
     {
         [SubscribeAndResolve]

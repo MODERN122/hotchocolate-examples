@@ -6,7 +6,6 @@ using HotChocolate.Types;
 
 namespace Chat.Server.Messages
 {
-    [ExtendObjectType(Name = "Message")]
     public class MessageExtension
     {
         public async Task<Direction> GetDirectionAsync(

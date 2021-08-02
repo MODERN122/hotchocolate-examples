@@ -15,6 +15,7 @@ using HotChocolate.Execution.Configuration;
 using HotChocolate.Types;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using HotChocolate.AspNetCore.Serialization;
 
 namespace Chat.Server
 {
@@ -29,45 +30,27 @@ namespace Chat.Server
 
         public void ConfigureServices(IServiceCollection services)
         {
-            ConfigureAuthenticationServices(services);
-
+            ConfigureAuthenticationServices(services); 
             services.AddCors();
 
+            services.AddDbContext<ChatDbContext>();
+
+            services.AddTransient<IHttpResultSerializer, DefaultHttpResultSerializer>();
+            services.AddHttpResultSerializer(
+    batchSerialization: HttpResultSerialization.JsonArray,
+    deferSerialization: HttpResultSerialization.MultiPartChunked); 
+            services.AddHttpResultSerializer<DefaultHttpResultSerializer>();
+
             services
-                .AddDbContext<ChatDbContext>()
-                .AddInMemorySubscriptions()
                 .AddGraphQL()
-                        .AddQueryType(d => d.Name("Query"))
-                        .AddType<PersonQueries>()
-                        .AddMutationType(d => d.Name("Mutation"))
-                        .AddType<MessageMutations>()
-                        .AddType<PersonMutations>()
-                        .AddType<UserMutations>()
-                        .AddSubscriptionType(d => d.Name("Subscription"))
-                        .AddType<MessageSubscriptions>()
-                        .AddType<PersonSubscriptions>()
-                        .AddType<MessageExtension>()
-                        .AddType<PersonExtension>()
-                        .BindRuntimeType<string, StringType>()
-                        .BindRuntimeType<Guid, IdType>();
-
-            services.AddQueryRequestInterceptor((context, builder, ct) =>
-            {
-                if (context.User.Identity.IsAuthenticated)
-                {
-                    var personId =
-                        Guid.Parse(context.User.FindFirst(WellKnownClaimTypes.UserId).Value);
-
-                    builder.AddProperty(
-                        "currentPersonId",
-                        personId);
-
-                    builder.AddProperty(
-                        "currentUserEmail",
-                        context.User.FindFirst(ClaimTypes.Email).Value);
-                }
-                return Task.CompletedTask;
-            });
+                .AddQueryType<PersonQueries>()
+                .AddMutationType<MessageMutations>()
+                .AddMutationType<PersonMutations>()
+                .AddMutationType<UserMutations>()
+                .AddSubscriptionType<MessageSubscriptions>()
+                .AddSubscriptionType<PersonSubscriptions>()
+                .AddTypeExtension<MessageExtension>()
+                .AddTypeExtension<PersonExtension>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -83,21 +66,14 @@ namespace Chat.Server
                 .AllowAnyMethod()
                 .AllowAnyOrigin());
 
-            app.UseRouting();
+            app.UseHttpsRedirection();
 
             app.UseAuthentication();
 
-            app.UseWebSockets();
-
+            app.UseRouting();
             app.UseEndpoints(x => x.MapGraphQL());
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapGet("/", async context =>
-                {
-                    await context.Response.WriteAsync("Hello World!");
-                });
-            });
+            
         }
     }
 }

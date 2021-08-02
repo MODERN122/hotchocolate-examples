@@ -10,7 +10,6 @@ using HotChocolate.Types;
 
 namespace Chat.Server.People
 {
-    [ExtendObjectType(Name = "Mutation")]
     public class PersonMutations
     {
         public async Task<InviteFriendPayload> InviteFriendAsync(

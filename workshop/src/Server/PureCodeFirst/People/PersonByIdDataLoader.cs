@@ -11,7 +11,7 @@ namespace Chat.Server.People
     {
         private readonly IPersonRepository _repository;
 
-        public PersonByIdDataLoader(IPersonRepository repository)
+        public PersonByIdDataLoader(IPersonRepository repository, GreenDonut.IBatchScheduler batch) :base(batch)
         {
             _repository = repository;
         }

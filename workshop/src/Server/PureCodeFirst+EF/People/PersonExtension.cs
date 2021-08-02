@@ -7,7 +7,6 @@ using HotChocolate.Types.Relay;
 
 namespace Chat.Server.People
 {
-    [ExtendObjectType(Name = "Person")]
     public class PersonExtension
     {
         public bool IsOnline([Parent]Person person) =>

@@ -15,7 +15,6 @@ using HotChocolate.Types;
 
 namespace Chat.Server.Users
 {
-    [ExtendObjectType(Name = "Mutation")]
     public class UserMutations
     {
         public async Task<CreateUserPayload> CreateUser(

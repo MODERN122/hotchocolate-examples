@@ -10,7 +10,7 @@ namespace Chat.Server.People
     {
         private readonly IPersonRepository _repository;
 
-        public PersonByEmailDataLoader(IPersonRepository repository)
+        public PersonByEmailDataLoader(IPersonRepository repository, GreenDonut.IBatchScheduler batch) : base(batch)
         {
             _repository = repository;
         }

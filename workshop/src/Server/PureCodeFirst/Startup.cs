@@ -33,7 +33,6 @@ namespace Chat.Server
 
             services
                 .AddRepositories(Configuration)
-                .AddDataLoaderRegistry()
                 .AddInMemorySubscriptions()
                 .AddGraphQL(
                     SchemaBuilder.New()
@@ -43,34 +42,10 @@ namespace Chat.Server
                         .AddType<PersonMutations>()
                         .AddType<UserMutations>()
                         .AddType<MessageMutations>()
-                        .AddSubscriptionType(d => d.Name("Subscription"))
-                        .AddType<MessageSubscriptions>()
-                        .AddType<PersonSubscriptions>()
                         .AddType<PersonExtension>()
                         .AddType<MessageExtension>()
-                        .AddAuthorizeDirectiveType()
                         .BindClrType<string, StringType>()
                         .BindClrType<Guid, IdType>());
-
-            services.AddQueryRequestInterceptor(async (context, builder, ct) =>
-            {
-                if (context.User.Identity.IsAuthenticated)
-                {
-                    var personId =
-                        Guid.Parse(context.User.FindFirst(WellKnownClaimTypes.UserId).Value);
-
-                    builder.AddProperty(
-                        "currentPersonId",
-                        personId);
-                    builder.AddProperty(
-                        "currentUserEmail",
-                        context.User.FindFirst(ClaimTypes.Email).Value);
-
-                    IPersonRepository personRepository =
-                        context.RequestServices.GetRequiredService<IPersonRepository>();
-                    await personRepository.UpdateLastSeenAsync(personId, DateTime.UtcNow, ct);
-                }
-            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -90,11 +65,10 @@ namespace Chat.Server
 
             app.UseAuthentication();
 
-            app.UseWebSockets();
+            //app.UseWebSockets();
 
-            app.UseGraphQL()
-                .UsePlayground()
-                .UseVoyager();
+            app.UseEndpoints(x =>
+            x.MapGraphQL());
 
             app.UseEndpoints(endpoints =>
             {

@@ -11,7 +11,6 @@ using HotChocolate.Types;
 
 namespace Chat.Server.Messages
 {
-    [ExtendObjectType(Name = "Mutation")]
     public class MessageMutations
     {
         public async Task<SendMessagePayload> SendMessageAsync(
